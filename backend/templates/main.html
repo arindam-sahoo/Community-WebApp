@@ -6,6 +6,12 @@
         <title>Comms-ee</title>
     </head>
     <body>
+        {% if messages %}
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        {% endif %}
+
         {% block content %}
 
         {% endblock %}
