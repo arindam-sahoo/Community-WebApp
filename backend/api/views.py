@@ -4,17 +4,20 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import Room, Topic
 from .forms import RoomForm
 
 def login_portal(request):
+    page = 'login'
+
     # if user is already logged in and tries to route the `/login`, the user will be redirected to the hompage.
     if request.user.is_authenticated:
         return redirect('homepage')
 
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
         try:
@@ -30,12 +33,27 @@ def login_portal(request):
         else:
             messages.error(request, "Username or Password does not exist.")
 
-    context = {}
+    context = {'page': page}
     return render(request, 'api/login_register.html', context)
 
 def logout_user(request):
     logout(request)
     return redirect('homepage')
+
+def register_portal(request):
+    page = 'register'
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('homepage')
+        else:
+            messages.error(request, 'An error occured during registration!!')
+    return render(request, 'api/login_register.html', {'form': form})
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q')!=None else ''
