@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from .models import Room, Topic
+from .models import Room, Topic, Message
 from .forms import RoomForm
 
 def login_portal(request):
@@ -71,8 +71,23 @@ def home(request):
 
 @login_required(login_url='/login')
 def room(request, pk):
-    room = Room.objects.get(id=pk)    
-    context = {'room': room}
+    room = Room.objects.get(id=pk)
+    participants = room.participants.all()
+
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user = request.user,
+            room = room,
+            body = request.POST.get('message_body')
+        )
+        # Once a user messages in the room, the user gets added as a roommate/participant
+        room.participants.add(request.user)
+        return redirect('room', pk=room.id)
+
+    # Room Parent Class has the Message as it's Child Class. So we are fetching all the messages belonging to the room.
+    room_messages = room.message_set.all().order_by('-created')
+
+    context = {'room': room, 'room_messages': room_messages, 'participants': participants}
     return render(request, 'api/room.html', context)
 
 @login_required(login_url='/login')
@@ -115,3 +130,15 @@ def delete_room(request, pk):
         room.delete()
         return redirect('homepage')
     return render(request, 'api/delete.html', {'obj': room})
+
+@login_required(login_url='/login')
+def delete_message(request, pk):
+    message = Message.objects.get(id=pk)
+
+    if request.user != message.user:
+        return HttpResponse('You are not allowed to delete this Message!!')
+    
+    if request.method == 'POST':
+        message.delete()
+        return redirect('homepage')
+    return render(request, 'api/delete.html', {'obj': message})
