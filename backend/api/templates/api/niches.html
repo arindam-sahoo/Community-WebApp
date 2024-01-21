@@ -1,0 +1,12 @@
+<h3>Look for Niches</h3>
+<hr/>
+
+<div>
+    <a href="{% url 'homepage' %}">All Niches</a>
+</div>
+
+{% for topic in topics %}
+    <div>
+        <a href="{% url 'homepage' %}?q={{ topic.name }}">{{ topic.name }}</a>
+    </div>
+{% endfor %}
