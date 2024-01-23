@@ -41,7 +41,7 @@
         </svg>
         5.3k Joined
       </a>
-      <p class="roomListRoom__topic">{{ room.topic.name }}</p>
+      <a href="{% url 'homepage' %}?q={{ room.topic.name }}" class="roomListRoom__topic" style="color: #fff;">{{ room.topic.name }}</a>
     </div>
 </div>
 {% endfor %}
