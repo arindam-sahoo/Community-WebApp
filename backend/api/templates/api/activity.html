@@ -28,7 +28,7 @@
             {% endif %}
         </div>
         <div class="activities__boxContent">
-          <p>Replied to <a href="room.html">{{ message.room }}</a></p>
+          <p>Replied to <a href="{% url 'room' message.room.id %}">{{ message.room }}</a></p>
           <div class="activities__boxRoomContent">
             {{ message.body }}
           </div>
