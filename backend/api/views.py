@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import Room, Topic, Message
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 
 def login_portal(request):
     page = 'login'
@@ -114,7 +114,7 @@ def create_room(request):
         #     room.save()
         return redirect('homepage')
 
-    context = {'form': form, 'topics': topics}
+    context = {'form': form, 'topics': topics, 'operation': 'Create'}
     return render(request, 'api/room_form.html', context)
 
 @login_required(login_url='/login')
@@ -136,7 +136,7 @@ def update_room(request, pk):
         room.save()
         return redirect('homepage')
         
-    context = {'form': form, 'topics': topics, 'room': room}
+    context = {'form': form, 'topics': topics, 'room': room, 'operation': 'Update'}
     return render(request, 'api/room_form.html', context)
 
 @login_required(login_url='/login')
@@ -174,3 +174,17 @@ def user_profile(request, pk):
 
     context = {'user':user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics, 'room_count': room_count}
     return render(request, 'api/profile.html', context)
+
+@login_required(login_url='login')
+def update_user(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    context = {'form': form, 'user': user}
+    return render(request, 'api/update_user.html', context)
