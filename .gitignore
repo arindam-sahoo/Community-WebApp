@@ -141,3 +141,6 @@ cython_debug/
 
 # Enhancements Plans
 enhancements.txt
+
+# Static Images Folder
+static/images
