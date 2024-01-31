@@ -96,32 +96,47 @@ def room(request, pk):
 @login_required(login_url='/login')
 def create_room(request):
     form = RoomForm()
+    topics = Topic.objects.all()
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            room = form.save(commit=False)
-            room.host = request.user
-            room.save()
-            return redirect('homepage')
+        # form = RoomForm(request.POST)
+        topic_name = request.POST.get('topic')
+        # If we don't have a niche/topic that the user wants, then he can add that. If it has not been created before created will be False.
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        Room.objects.create(
+            host = request.user,
+            topic = topic,
+            name = request.POST.get('name'),
+            description = request.POST.get('description'),
+        )
+        # if form.is_valid():
+        #     room = form.save(commit=False)
+        #     room.host = request.user
+        #     room.save()
+        return redirect('homepage')
 
-    context = {'form': form}
+    context = {'form': form, 'topics': topics}
     return render(request, 'api/room_form.html', context)
 
 @login_required(login_url='/login')
 def update_room(request, pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
+    topics = Topic.objects.all()
 
     if request.user != room.host:
         return HttpResponse('You are not allowed to update this Room!!')
 
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect('homepage')
+        topic_name = request.POST.get('topic')
+        # If we don't have a niche/topic that the user wants, then he can add that. If it has not been created before created will be False.
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.name = request.POST.get('name')
+        room.topic = topic
+        room.description = request.POST.get('description')
+        room.save()
+        return redirect('homepage')
         
-    context = {'form': form}
+    context = {'form': form, 'topics': topics, 'room': room}
     return render(request, 'api/room_form.html', context)
 
 @login_required(login_url='/login')
@@ -153,5 +168,9 @@ def user_profile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
-    context = {'user':user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
+
+    rooms = Room.objects.all()
+    room_count = rooms.count()
+
+    context = {'user':user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics, 'room_count': room_count}
     return render(request, 'api/profile.html', context)
