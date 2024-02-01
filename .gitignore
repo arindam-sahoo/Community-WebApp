@@ -143,4 +143,4 @@ cython_debug/
 enhancements.txt
 
 # Static Images Folder
-static/images
+images
