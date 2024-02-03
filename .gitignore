@@ -144,3 +144,6 @@ enhancements.txt
 
 # Static Images Folder
 images
+
+# Migrations
+migrations

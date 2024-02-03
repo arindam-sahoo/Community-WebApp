@@ -59,7 +59,7 @@
                         </div>
                     {% else %}
                         <a href="{% url 'login' %}">
-                            <img src="{{ request.user.avatar.url }}" style="width: 35px;" />
+                            <img src="{% static 'images/avatar.svg' %}" style="width: 35px;" />
                             <p>Login</p>
                         </a>
                     {% endif %}
