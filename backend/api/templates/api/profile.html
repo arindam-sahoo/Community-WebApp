@@ -9,7 +9,6 @@
         }
     </style>
 
-    {% comment %} <h1>{{ user.username }}</h1> {% endcomment %}
     <main class="profile-page layout layout--3">
         <div class="container">
             <div class="topics">
@@ -30,18 +29,16 @@
                         <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
                       {% endif %}
                     </div>
-                    {% comment %} <div class="profile__about">
-                      <h3>About</h3>
+                    <div class="profile__about" style="text-align: center;">
+                      <h3>Bio</h3>
                       <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur illo tenetur
-                        facilis sunt nemo debitis quisquam hic atque aut? Ducimus alias placeat optio
-                        accusamus repudiandae quis ab ex exercitationem rem?
+                        {{ user.bio }}
                       </p>
-                    </div> {% endcomment %}
+                    </div>
                 </div>
                 <div class="roomList__header">
                     <div>
-                      <h2>Study Rooms Hosted by @{{ user.username }}</a>
+                      <h2>Rooms Visited by @{{ user.username }}</a>
                       </h2>
                     </div>
                 </div>
